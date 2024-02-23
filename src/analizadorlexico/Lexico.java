@@ -184,7 +184,7 @@ public class Lexico {
                 estado = Integer.parseInt(matrizEstados[estado][columna]);   
                 }
             }catch(ArrayIndexOutOfBoundsException ex){
-                lexemas.add(new Lexema("Error de sintaxis", "", 500, line));
+                lexemas.add(new Lexema("Error de sintaxis", listToString(texto), 500, line));
                 estado = 0;
                 texto.clear();
                 columna = 0;

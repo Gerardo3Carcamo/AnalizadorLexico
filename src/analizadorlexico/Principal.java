@@ -11,8 +11,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 /**
  *
@@ -31,10 +34,16 @@ public class Principal extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setTitle("Tabla de tokens");
     }
+    public Principal(ArrayList<Lexema> data){
+        initComponents();
+        initTable(data, true);
+        this.jButton1.setVisible(false);
+        this.jButton2.setVisible(false);
+    }
     
     public static String openTextFile() {
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de texto", "txt");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de texto", "rrd");
         fileChooser.setFileFilter(filter);
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -90,6 +99,10 @@ public class Principal extends javax.swing.JFrame {
         });
         tokensTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         tokensTable.setGridColor(new java.awt.Color(255, 255, 255));
+        tokensTable.setName(""); // NOI18N
+        tokensTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tokensTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tokensTable.setShowGrid(true);
         tokensTable.getTableHeader().setResizingAllowed(false);
         tokensTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tokensTable);
@@ -113,6 +126,11 @@ public class Principal extends javax.swing.JFrame {
         jButton1.setFont(new java.awt.Font("Fira Code", 0, 14)); // NOI18N
         jButton1.setText("Mostrar errores");
         jButton1.setEnabled(false);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -156,8 +174,15 @@ public class Principal extends javax.swing.JFrame {
         String path = openTextFile();
         Lexico l = new Lexico();
         ArrayList<Lexema> list = l.analizar(readTextFromFile(path));
-        initTable(list);
+        initTable(list, false);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        JFrame erroresTable = new Principal(errores);
+        erroresTable.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        erroresTable.setTitle("Tabla de errores");
+        erroresTable.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     private String readTextFromFile(String filePath) {
         StringBuilder text = new StringBuilder();
@@ -172,19 +197,28 @@ public class Principal extends javax.swing.JFrame {
         return text.toString();
     }
     
-    private void initTable(ArrayList<Lexema> data){
-        DefaultTableModel model = (DefaultTableModel) tokensTable.getModel();
-        data.forEach(x -> {
-            if(x.getState() == 500){
-                errores.add(x);
-            }else{
+    private void initTable(ArrayList<Lexema> data, boolean isErrorTable){
+        if(isErrorTable){
+            DefaultTableModel model = (DefaultTableModel) tokensTable.getModel();
+            data.forEach(x -> {
                 Object[] row = {x.getValue(), x.getToken(), x.getState(), x.getLine()};
                 model.addRow(row);
+            });
+            tokensTable.setModel(model);
+        }else{
+            DefaultTableModel model = (DefaultTableModel) tokensTable.getModel();
+            data.forEach(x -> {
+                if(x.getState() == 500){
+                    errores.add(x);
+                }else{
+                    Object[] row = {x.getValue(), x.getToken(), x.getState(), x.getLine()};
+                    model.addRow(row);
+                }
+            });
+            tokensTable.setModel(model);
+            if(!errores.isEmpty()){
+                this.jButton1.setEnabled(true);
             }
-        });
-        tokensTable.setModel(model);
-        if(!errores.isEmpty()){
-            this.jButton1.setEnabled(true);
         }
     }
     
