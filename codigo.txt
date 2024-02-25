@@ -1,0 +1,23 @@
+}
+#include archivo1
+a:=100
+b:=200
+c:=300
+x,y,z:int[20]
+s,t,r:double[10][20]
+valor1, valor:string[10]
+int function proceso(a,b,c:int){
+	if a>b{
+		abs(-30);
+		sqrt();
+	}
+}
+10.25
+10E+15
+10E-15
+10E5
+texto = "Hola";
+2."
+if a>=b{
+	a:int
+}
