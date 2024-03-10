@@ -43,7 +43,7 @@ public class Principal extends javax.swing.JFrame {
     
     public static String openTextFile() {
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de texto", "rrd");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de texto", "txt");
         fileChooser.setFileFilter(filter);
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {

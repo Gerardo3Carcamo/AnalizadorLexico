@@ -13,13 +13,12 @@ import java.util.HashMap;
  * @author 000093883
  */
 public class Lexico {
-    
-    /**
-     * 501 -> error al crear un numero decimal
-     * 502 -> error al crear un numero con notacion cientifica
-     * 
-     */
 
+    /**
+     * 501 -> error al crear un numero decimal 502 -> error al crear un numero
+     * con notacion cientifica
+     *
+     */
     private HashMap<String, Integer> mapColumns = new HashMap<>();
     private int line = 1;
     private int apuntador = 0;
@@ -126,7 +125,6 @@ public class Lexico {
         mapColumns.put("<", 15);
         mapColumns.put(".", 16);
         mapColumns.put("#", 17);
-        mapColumns.put("^[a-zA-Z][$#a-zA-Z0-9]*$", 18);
         mapColumns.put("$", 19);
         mapColumns.put("_", 20);
         mapColumns.put("[0-9]", 21);
@@ -137,8 +135,8 @@ public class Lexico {
 
     private String listToString(ArrayList<String> data) {
         StringBuilder builder = new StringBuilder();
-        data.forEach(x -> { 
-            builder.append(x); 
+        data.forEach(x -> {
+            builder.append(x);
         });
         return builder.toString();
     }
@@ -147,7 +145,7 @@ public class Lexico {
         Lexema response = new Lexema("Error lexico", "Error", 500, line);
         switch (estado) {
             case 1000 ->
-                response = Arrays.asList(palabrasClave).contains(listToString(texto).trim()) ? new Lexema("Palabra reservada", lexema, estado, line) : new Lexema("Identificador", lexema, estado, line);
+                response = Arrays.asList(palabrasClave).contains(listToString(texto).trim().toLowerCase()) ? new Lexema("Palabra reservada", lexema, estado, line) : new Lexema("Identificador", lexema, estado, line);
             case 1001 ->
                 response = new Lexema("Numero entero", lexema, estado, line);
             case 1026 ->
@@ -166,7 +164,8 @@ public class Lexico {
                 response = new Lexema("Operador booleano", lexema, estado, line);
             case 1007, 1015, 1016, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025 ->
                 response = new Lexema("Simbolo", lexema, estado, line);
-            case 1004 -> response = new Lexema("Comentario", lexema, estado, line);
+            case 1004 ->
+                response = new Lexema("Comentario", lexema, estado, line);
         }
         return response;
     }
@@ -176,44 +175,56 @@ public class Lexico {
         codigo = codigo.concat(" ").replaceAll("\t", "");
         while (apuntador != (codigo.length())) {
             char actual = codigo.charAt(apuntador);
-            if((int)actual == 10){
+            if ((int) actual == 10) {
                 line++;
                 actual = ' ';
             }
             apuntador++;
             texto.add(String.valueOf(actual));
-            columna = Character.isLetter(actual) ? 18 : (Character.isDigit(actual) ? 21 : mapColumns.get(String.valueOf(actual)));
-            try{
-                if((estado == 2 || estado == 4) && actual == 'E'){
-                    estado = 10;
-                }else{
-                estado = Integer.parseInt(matrizEstados[estado][columna]);   
+            try {
+                columna = Character.isLetter(actual) ? 18 : (Character.isDigit(actual) ? 21 : mapColumns.get(String.valueOf(actual)));
+            } catch (Exception ex) {
+                columna = -1;
+            }
+            if (columna != -1) {
+                try {
+                    if ((estado == 2 || estado == 4) && actual == 'E') {
+                        estado = 10;
+                    } else {
+                        estado = Integer.parseInt(matrizEstados[estado][columna]);
+                    }
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    line--;
+                    lexemas.add(new Lexema("Error de sintaxis", listToString(texto), 500, line));
+                    estado = 0;
+                    texto.clear();
+                    columna = 0;
+                    apuntador--;
                 }
-            }catch(ArrayIndexOutOfBoundsException ex){
-                line--;
+                if (estado >= 1000) {
+                    if (!listToString(texto).contains("E") && (estado == 1027 || estado == 1028) && listToString(texto).contains("+")) {
+                        estado = 1005;
+                    } else if (!listToString(texto).contains("E") && (estado == 1027 || estado == 1028) && listToString(texto).contains("-")) {
+                        estado = 1009;
+                    }
+                    if (!listToString(texto).endsWith(" ") && estado < 1015) {
+                        apuntador--;
+                        texto.remove(texto.size() - 1);
+                    }
+                    lexemas.add(processFinalStates(estado, listToString(texto).replace(" ", ""), line));
+                    estado = 0;
+                    texto.clear();
+                    columna = 0;
+                }
+            }else{
                 lexemas.add(new Lexema("Error de sintaxis", listToString(texto), 500, line));
                 estado = 0;
-                texto.clear();
-                columna = 0;
-                apuntador--;
+                    texto.clear();
+                    columna = 0;
             }
-            if (estado >= 1000) {
-                if (!listToString(texto).contains("E") && (estado == 1027 || estado == 1028) && listToString(texto).contains("+")) {
-                    estado = 1005;
-                }else if(!listToString(texto).contains("E") && (estado == 1027 || estado == 1028) && listToString(texto).contains("-")){
-                    estado = 1009;
-                }
-                if(!listToString(texto).endsWith(" ") && estado < 1015){
-                    apuntador--;
-                    texto.remove(texto.size()-1);
-                }
-                lexemas.add(processFinalStates(estado, listToString(texto).replace(" ", ""), line));
-                estado = 0;
-                texto.clear();
-                columna = 0;
-            }
-            
-        }   
+
+        }
+        System.out.println(lexemas.size());
         return lexemas;
     }
 
