@@ -19,136 +19,139 @@ import java.util.Set;
 public class Gramatica {
 
     public static Map<String, List<String>> gramatica = new LinkedHashMap<>();
-    public static Set<String> noTerminales = new LinkedHashSet<>();
-    public static Set<String> terminales = new LinkedHashSet<>();
+    public static LinkedHashSet<String> noTerminales = new LinkedHashSet<>();
+    public static LinkedHashSet<String> terminales = new LinkedHashSet<>();
 
     public static void initNoTerminales() {
         // Agregar los símbolos no terminales a noTerminales
-//        noTerminales.add("P");
-//        noTerminales.add("INCLUDE");
-//        noTerminales.add("CONSTANTES");
-//        noTerminales.add("VARIABLES");
-//        noTerminales.add("FUNCTION");
-//        noTerminales.add("MAIN");
-//        noTerminales.add("VARIABLES_PRIMA");
-//        noTerminales.add("LISTA_VARIABLES");
-//        noTerminales.add("LISTA_VARIABLES_PRIMA");
-//        noTerminales.add("TIPO");
-//        noTerminales.add("DIMENSION");
-//        noTerminales.add("PROCEDURE");
-//        noTerminales.add("PROCEDURE'");
-//        noTerminales.add("PARAMETROS");
-//        noTerminales.add("RETURN");
-//        noTerminales.add("BLOQUE");
-//        noTerminales.add("ESTATUTOS");
-//        noTerminales.add("ESTATUTO");
-//        noTerminales.add("ASIGNACION");
-//        noTerminales.add("CALL_FUNCTION");
-//        noTerminales.add("BUILD_IN_FUNCTIONS");
-//        noTerminales.add("IMPRESION");
-//        noTerminales.add("LISTA");
-//        noTerminales.add("LISTA_ELEMENTO");
-//        noTerminales.add("LISTA_ELEMENTO_PRIMA");
-//        noTerminales.add("IF");
-//        noTerminales.add("ELIF");
-//        noTerminales.add("WHILE");
-//        noTerminales.add("FOR");
-//        noTerminales.add("DO");
-//        noTerminales.add("SIGNO");
-//        noTerminales.add("EXP_BOOLEANA");
-//        noTerminales.add("EXPB'");
-//        noTerminales.add("TERMB");
-//        noTerminales.add("TERMB'");
-//        noTerminales.add("EXP");
-//        noTerminales.add("EXP'");
-//        noTerminales.add("TERM");
-//        noTerminales.add("TERM'");
-//        noTerminales.add("FACTOR");
-//        noTerminales.add("FUNCT");
-//        noTerminales.add("OPER");
+        noTerminales.add("P");
+        noTerminales.add("INCLUDE");
+        noTerminales.add("CONSTANTES");
+        noTerminales.add("VARIABLES");
+        noTerminales.add("FUNCTION");
+        noTerminales.add("MAIN");
+        noTerminales.add("VARIABLES_PRIMA");
+        noTerminales.add("LISTA_VARIABLES");
+        noTerminales.add("LISTA_VARIABLES_PRIMA");
+        noTerminales.add("TIPO");
+        noTerminales.add("DIMENSION");
+        noTerminales.add("PROCEDURE");
+        noTerminales.add("PROCEDURE'");
+        noTerminales.add("PARAMETROS");
+        noTerminales.add("RETURN");
+        noTerminales.add("BLOQUE");
+        noTerminales.add("ESTATUTOS");
+        noTerminales.add("ESTATUTO");
+        noTerminales.add("ASIGNACION");
+        noTerminales.add("CALL_FUNCTION");
+        noTerminales.add("BUILD_IN_FUNCTIONS");
+        noTerminales.add("IMPRESION");
+        noTerminales.add("LISTA");
+        noTerminales.add("LISTA_ELEMENTO");
+        noTerminales.add("LISTA_ELEMENTO_PRIMA");
+        noTerminales.add("IF");
+        noTerminales.add("ELIF");
+        noTerminales.add("WHILE");
+        noTerminales.add("FOR");
+        noTerminales.add("DO");
+        noTerminales.add("SIGNO");
+        noTerminales.add("EXP_BOOLEANA");
+        noTerminales.add("EXPB'");
+        noTerminales.add("TERMB");
+        noTerminales.add("TERMB'");
+        noTerminales.add("EXP");
+        noTerminales.add("EXP'");
+        noTerminales.add("TERM");
+        noTerminales.add("TERM'");
+        noTerminales.add("FACTOR");
+        noTerminales.add("FUNCT");
+        noTerminales.add("OPER");
 
-        noTerminales.add("E");
-        noTerminales.add("E'");
-        noTerminales.add("T");
-        noTerminales.add("T'");
-        noTerminales.add("F");
+//        noTerminales.add("E");
+//        noTerminales.add("E'");
+//        noTerminales.add("T");
+//        noTerminales.add("T'");
+//        noTerminales.add("F");
     }
 
     public static void initTerminales() {
-//        terminales.add("#");
-//        terminales.add("include");
-//        terminales.add("identificador");
-//        terminales.add(":=");
-//        terminales.add(";");
-//        terminales.add("int");
-//        terminales.add("float");
-//        terminales.add("double");
-//        terminales.add("string");
-//        terminales.add("char");
-//        terminales.add("[numero]");
-//        terminales.add("function");
-//        terminales.add("(");
-//        terminales.add(")");
-//        terminales.add("call");
-//        terminales.add("abs(identificador)");
-//        terminales.add("sqr(EXP)");
-//        terminales.add("sqrt(EXP)");
-//        terminales.add("sin(EXP)");
-//        terminales.add("sinh(EXP)");
-//        terminales.add("cosh(EXP)");
-//        terminales.add("cos(EXP)");
-//        terminales.add("tang(EXP)");
-//        terminales.add("tangh(EXP)");
-//        terminales.add("atang(EXP)");
-//        terminales.add("asin(EXP)");
-//        terminales.add("acos(EXP)");
-//        terminales.add("log(EXP)");
-//        terminales.add("exponential(EXP)");
-//        terminales.add("chr(numero)");
-//        terminales.add("float(texto)");
-//        terminales.add("length(identificador)");
-//        terminales.add("printf(IMPRESION)");
-//        terminales.add("scanf()");
-//        terminales.add("pow(EXP)");
-//        terminales.add("cbrt(EXP)");
-//        terminales.add("fact(EXP)");
-//        terminales.add("round(EXP)");
-//        terminales.add("trunc(EXP)");
-//        terminales.add("minimal(LISTA)");
-//        terminales.add("maximal(LISTA)");
-//        terminales.add("floor(EXP)");
-//        terminales.add("id");
-//        terminales.add("numero");
-//        terminales.add("texto");
-//        terminales.add("if");
-//        terminales.add("elif");
-//        terminales.add("else");
-//        terminales.add("while");
-//        terminales.add("for");
-//        terminales.add("do");
-//        terminales.add("++");
-//        terminales.add("--");
-//        terminales.add("and");
-//        terminales.add("or");
-//        terminales.add(">");
-//        terminales.add("<");
-//        terminales.add(">=");
-//        terminales.add("<=");
-//        terminales.add("=");
-
-        terminales.add("+");
-        terminales.add("*");
+        terminales.add("#");
+        terminales.add("include");
+        terminales.add("identificador");
+        terminales.add(":=");
+        terminales.add(";");
+        terminales.add("int");
+        terminales.add("float");
+        terminales.add("double");
+        terminales.add("string");
+        terminales.add("char");
+        terminales.add("[");
+        terminales.add("numero");
+        terminales.add("]");
+        terminales.add("function");
         terminales.add("(");
         terminales.add(")");
+        terminales.add("call");
+        terminales.add("abs(identificador)");
+        terminales.add("sqr(EXP)");
+        terminales.add("sqrt(EXP)");
+        terminales.add("sin(EXP)");
+        terminales.add("sinh(EXP)");
+        terminales.add("cosh(EXP)");
+        terminales.add("cos(EXP)");
+        terminales.add("tang(EXP)");
+        terminales.add("tangh(EXP)");
+        terminales.add("atang(EXP)");
+        terminales.add("asin(EXP)");
+        terminales.add("acos(EXP)");
+        terminales.add("log(EXP)");
+        terminales.add("exponential(EXP)");
+        terminales.add("chr(numero)");
+        terminales.add("float(texto)");
+        terminales.add("length(identificador)");
+        terminales.add("printf(IMPRESION)");
+        terminales.add("scanf()");
+        terminales.add("pow(EXP)");
+        terminales.add("cbrt(EXP)");
+        terminales.add("fact(EXP)");
+        terminales.add("round(EXP)");
+        terminales.add("trunc(EXP)");
+        terminales.add("minimal(LISTA)");
+        terminales.add("maximal(LISTA)");
+        terminales.add("floor(EXP)");
         terminales.add("id");
+        terminales.add("numero");
+        terminales.add("texto");
+        terminales.add("if");
+        terminales.add("elif");
+        terminales.add("else");
+        terminales.add("while");
+        terminales.add("for");
+        terminales.add("do");
+        terminales.add("++");
+        terminales.add("--");
+        terminales.add("and");
+        terminales.add("or");
+        terminales.add(">");
+        terminales.add("<");
+        terminales.add(">=");
+        terminales.add("<=");
+        terminales.add("=");
+        terminales.add(",");
+
+//        terminales.add("+");
+//        terminales.add("*");
+//        terminales.add("(");
+//        terminales.add(")");
+//        terminales.add("id");
     }
 
     public static void initGramatica() {
-        gramatica.put("E", Arrays.asList("T E'"));
-        gramatica.put("E'", Arrays.asList("+ T E'", "null"));
-        gramatica.put("T", Arrays.asList("F T'"));
-        gramatica.put("T'", Arrays.asList("* F T'", "null"));
-        gramatica.put("F", Arrays.asList("( E )", "id"));
+//        gramatica.put("E", Arrays.asList("T E'"));
+//        gramatica.put("E'", Arrays.asList("+ T E'", "null"));
+//        gramatica.put("T", Arrays.asList("F T'"));
+//        gramatica.put("T'", Arrays.asList("* F T'", "null"));
+//        gramatica.put("F", Arrays.asList("( E )", "id"));
 //
 //        terminales.add("+");
 //        terminales.add("*");
@@ -256,7 +259,7 @@ public class Gramatica {
                 null
         ));
         gramatica.put("LISTA", Arrays.asList(
-                "[LISTA_ELEMENTO]"
+                "[ LISTA_ELEMENTO ]"
         ));
         gramatica.put("LISTA_ELEMENTO", Arrays.asList(
                 "numero LISTA_ELEMENTO_PRIMA"
@@ -447,7 +450,7 @@ public class Gramatica {
             LinkedHashSet<String> f = g.getFirst(x);
             StringBuilder builder = new StringBuilder();
             builder.append("{ ");
-            f.forEach(y -> builder.append(y).append(", "));
+            f.forEach(y -> builder.append(y).append("| "));
             if (builder.toString().length() >= 3) {
                 System.out.println(builder.toString().substring(0, builder.length() - 2) + " }");
             } else {
@@ -460,7 +463,7 @@ public class Gramatica {
             LinkedHashSet<String> f = g.getFollow(x);
             StringBuilder builder = new StringBuilder();
             builder.append("{ ");
-            f.forEach(y -> builder.append(y).append(", "));
+            f.forEach(y -> builder.append(y).append("| "));
             if (builder.toString().length() >= 3) {
                 System.out.println(builder.toString().substring(0, builder.length() - 2) + " }");
             } else {
