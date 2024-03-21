@@ -4,36 +4,41 @@
  */
 package AnalizadorSintactico;
 
-import java.util.List;
-
 /**
  *
  * @author 000093883
  */
 public class First {
     
-    private String Simbolo;
-    private List<String> Terminales;
+    private String Produccion;
+    private int Line;
 
-    public First(String Simbolo, List<String> Terminales) {
-        this.Simbolo = Simbolo;
-        this.Terminales = Terminales;
+    public First(String Produccion, int Line) {
+        this.Produccion = Produccion;
+        this.Line = Line;
     }
 
-    public String getSimbolo() {
-        return Simbolo;
+    public String getProduccion() {
+        return Produccion;
     }
 
-    public void setSimbolo(String Simbolo) {
-        this.Simbolo = Simbolo;
+    public void setProduccion(String Produccion) {
+        this.Produccion = Produccion;
     }
 
-    public List<String> getTerminales() {
-        return Terminales;
+    public int getLine() {
+        return Line;
     }
 
-    public void setTerminales(List<String> Terminales) {
-        this.Terminales = Terminales;
+    public void setLine(int Line) {
+        this.Line = Line;
     }
+
+    @Override
+    public String toString() {
+        return "{" + "Simbolo Terminal => " + Produccion + ", Line = " + Line + '}';
+    }
+    
+    
     
 }

@@ -34,4 +34,8 @@ public class ListedProduction {
         this.line = line;
     }
 
+    @Override
+    public String toString(){
+        return "(" + String.valueOf(line) + ": " + simbolos + ")";
+    }
 }

@@ -4,15 +4,16 @@
  */
 package AnalizadorSintactico;
 
-import java.util.AbstractList;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,6 +24,8 @@ public class Gramatica {
     public static Map<String, Produccion> gramatica = new LinkedHashMap<>();
     public static LinkedHashSet<String> noTerminales = new LinkedHashSet<>();
     public static LinkedHashSet<String> terminales = new LinkedHashSet<>();
+    private final String FILE_EXTENSION = ".txt";
+    private final int LIMIT = 100;
 
     public static void initNoTerminales() {
         // Agregar los símbolos no terminales a noTerminales
@@ -37,7 +40,6 @@ public class Gramatica {
         noTerminales.add("LISTA_VARIABLES_PRIMA");
         noTerminales.add("TIPO");
         noTerminales.add("DIMENSION");
-        noTerminales.add("FUNCION");
         noTerminales.add("PROCEDURE'");
         noTerminales.add("PARAMETROS");
         noTerminales.add("RETURN");
@@ -48,6 +50,7 @@ public class Gramatica {
         noTerminales.add("CALL_FUNCTION");
         noTerminales.add("BUILD_IN_FUNCTIONS");
         noTerminales.add("IMPRESION");
+        noTerminales.add("IMPRESION_PRIMA");
         noTerminales.add("LISTA");
         noTerminales.add("LISTA_ELEMENTO");
         noTerminales.add("LISTA_ELEMENTO_PRIMA");
@@ -67,7 +70,7 @@ public class Gramatica {
         noTerminales.add("TERM'");
         noTerminales.add("FACTOR");
         noTerminales.add("FUNCT");
-        noTerminales.add("OPER"); 
+        noTerminales.add("OPER");
     }
 
     public static void initTerminales() {
@@ -135,16 +138,20 @@ public class Gramatica {
         terminales.add(">=");
         terminales.add("<=");
         terminales.add("=");
-        terminales.add(","); 
-        terminales.add("return"); 
+        terminales.add(",");
+        terminales.add("return");
+        terminales.add("/");
+        terminales.add("*");
+        terminales.add("+");
+        terminales.add("-");
     }
 
     public static void initGramatica() {
-//        gramatica.put("E", new Produccion(Arrays.asList("T E'"), 1));
-//        gramatica.put("E'", new Produccion(Arrays.asList("+ T E'", "null"), 2));
-//        gramatica.put("T", new Produccion(Arrays.asList("F T'"), 3));
-//        gramatica.put("T'", new Produccion(Arrays.asList("* F T'", "null"), 4));
-//        gramatica.put("F", new Produccion(Arrays.asList("( E )", "id"), 5));
+//        gramatica.put("E", new Produccion(Arrays.asList(new ListedProduction("T E'", 1))));
+//        gramatica.put("E'", new Produccion(Arrays.asList(new ListedProduction("+ T E'", 2), new ListedProduction("null", 3))));
+//        gramatica.put("T", new Produccion(Arrays.asList(new ListedProduction("F T'", 4))));
+//        gramatica.put("T'", new Produccion(Arrays.asList(new ListedProduction("* F T'", 5), new ListedProduction("null", 6))));
+//        gramatica.put("F", new Produccion(Arrays.asList(new ListedProduction("( E )", 7), new ListedProduction("id", 8))));
 //
 //        terminales.add("+");
 //        terminales.add("*");
@@ -157,156 +164,194 @@ public class Gramatica {
 //        noTerminales.add("T");
 //        noTerminales.add("T'");
 //        noTerminales.add("F");
-        gramatica.put("P", new Produccion(Arrays.asList(new ListedProduction("INCLUDE CONSTANTES VARIABLES FUNCION MAIN", 1))));
-        //Include
-        gramatica.put("INCLUDE", new Produccion(Arrays.asList(new ListedProduction("# include < identificador >", 2))));
-        //Constantes
+        gramatica.put("P", new Produccion(Arrays.asList(
+            new ListedProduction("INCLUDE CONSTANTES VARIABLES FUNCION MAIN", 1)
+        )));
+        gramatica.put("INCLUDE", new Produccion(Arrays.asList(
+            new ListedProduction("# include < identificador >", 2)
+        )));
         gramatica.put("CONSTANTES", new Produccion(Arrays.asList(
-                new ListedProduction("identificador := EXP CONSTANTES", 3),
-                new ListedProduction(null, 4))));
-        //Variables
+            new ListedProduction("identificador := EXP CONSTANTES", 3),
+            new ListedProduction("null", 4)
+        )));
         gramatica.put("VARIABLES", new Produccion(Arrays.asList(
-                new ListedProduction("LISTA_VARIABLES : TIPO VARIABLES_PRIMA", 5))));
+            new ListedProduction("LISTA_ VARIABLES : TIPO VARIABLES_PRIMA", 5)
+        )));
         gramatica.put("VARIABLES_PRIMA", new Produccion(Arrays.asList(
-                new ListedProduction("; VARIABLES", 6),
-                new ListedProduction(null, 7))));
-        gramatica.put("LISTA_VARIABLES", new Produccion(Arrays.asList(new ListedProduction("identificador LISTA_VARIABLES_PRIMA", 8))));
+            new ListedProduction("; VARIABLES", 6),
+            new ListedProduction("null", 7)
+        )));
+        gramatica.put("LISTA_VARIABLES", new Produccion(Arrays.asList(
+            new ListedProduction("identificador LISTA_VARIABLES_PRIMA", 8)
+        )));
         gramatica.put("LISTA_VARIABLES_PRIMA", new Produccion(Arrays.asList(
-                new ListedProduction(", LISTA_VARIABLES", 9),
-                new ListedProduction(null, 10))));
+            new ListedProduction(", LISTA_VARIABLES", 9),
+            new ListedProduction("null", 10)
+        )));
         gramatica.put("TIPO", new Produccion(Arrays.asList(
-                new ListedProduction("int DIMENSION", 11),
-                new ListedProduction("float DIMENSION", 12),
-                new ListedProduction("double DIMENSION", 13),
-                new ListedProduction("string DIMENSION", 14),
-                new ListedProduction("char DIMENSION", 15))));
+            new ListedProduction("int DIMENSION", 11),
+            new ListedProduction("float DIMENSION", 12),
+            new ListedProduction("double DIMENSION", 13),
+            new ListedProduction("string DIMENSION", 14),
+            new ListedProduction("char DIMENSION", 15)
+        )));
         gramatica.put("DIMENSION", new Produccion(Arrays.asList(
-                new ListedProduction("[ numero ] DIMENSION", 16),
-                new ListedProduction(null, 17))));
-        //Function
+            new ListedProduction("[ numero ] DIMENSION", 16),
+            new ListedProduction("null", 17)
+        )));
         gramatica.put("FUNCION", new Produccion(Arrays.asList(
-                new ListedProduction("function identificador (PARAMETROS) BLOQUE RETURN PROCEDURE'", 18),
-                new ListedProduction(null, 19))));
+            new ListedProduction("TIPO function identificador ( PARAMETROS ) BLOQUE RETURN PROCEDURE'", 18),
+            new ListedProduction("null", 19)
+        )));
         gramatica.put("PROCEDURE'", new Produccion(Arrays.asList(
-                new ListedProduction("FUNCION", 20),
-                new ListedProduction(null, 21))));
+            new ListedProduction("FUNCION", 20),
+            new ListedProduction("null", 21)
+        )));
         gramatica.put("PARAMETROS", new Produccion(Arrays.asList(
-                new ListedProduction("VARIABLES", 22),
-                new ListedProduction(null, 23))));
-        gramatica.put("RETURN", new Produccion(Arrays.asList(new ListedProduction("return identificador", 24))));
-        //Main
-        gramatica.put("MAIN", new Produccion(Arrays.asList(new ListedProduction("{ ESTATUTOS }", 25))));
-        //Bloque de estatutos
-        gramatica.put("BLOQUE", new Produccion(Arrays.asList(new ListedProduction("{ ESTATUTOS }", 26))));
-        //Seecion de estatutos
+            new ListedProduction("VARIABLES", 22),
+            new ListedProduction("null", 23)
+        )));
+        gramatica.put("RETURN", new Produccion(Arrays.asList(
+            new ListedProduction("return identificador", 24)
+        )));
+        gramatica.put("MAIN", new Produccion(Arrays.asList(
+            new ListedProduction("{ ESTATUTOS }", 25)
+        )));
+        gramatica.put("BLOQUE", new Produccion(Arrays.asList(
+            new ListedProduction("{ ESTATUTOS }", 26)
+        )));
         gramatica.put("ESTATUTOS", new Produccion(Arrays.asList(
-                new ListedProduction("ESTATUTO ; ESTATUTOS", 27),
-                new ListedProduction(null, 28))));
-        //Estatuto
+            new ListedProduction("ESTATUTO ; ESTATUTOS", 27),
+            new ListedProduction("null", 28)
+        )));
         gramatica.put("ESTATUTO", new Produccion(Arrays.asList(
-                new ListedProduction("ASIGNACION", 29),
-                new ListedProduction("CALL_FUNCTION", 30),
-                new ListedProduction("WHILE", 31),
-                new ListedProduction("IF", 32),
-                new ListedProduction("FOR", 33),
-                new ListedProduction("DO", 34),
-                new ListedProduction("BUILD_IN_FUNCTIONS", 35))));
-        gramatica.put("ASIGNACION", new Produccion(Arrays.asList(new ListedProduction("identificador = EXP", 36))));
-        gramatica.put("CALL_FUNCTION", new Produccion(Arrays.asList(new ListedProduction("call identificador ( PARAMETRO )", 37))));
+            new ListedProduction("ASIGNACION", 29),
+            new ListedProduction("CALL_FUNCTION", 30),
+            new ListedProduction("WHILE", 31),
+            new ListedProduction("IF", 32),
+            new ListedProduction("FOR", 33),
+            new ListedProduction("DO", 34),
+            new ListedProduction("BUILD_IN_FUNCTIONS", 35)
+        )));
+        gramatica.put("ASIGNACION", new Produccion(Arrays.asList(
+            new ListedProduction("identificador = EXP", 36)
+        )));
+        gramatica.put("CALL_FUNCTION", new Produccion(Arrays.asList(
+            new ListedProduction("call identificador ( PARAMETRO )", 37)
+        )));
         gramatica.put("BUILD_IN_FUNCTIONS", new Produccion(Arrays.asList(
-                new ListedProduction("abs", 38),
-                new ListedProduction("sqr", 39),
-                new ListedProduction("sqrt", 40),
-                new ListedProduction("sin", 41),
-                new ListedProduction("sinh", 42),
-                new ListedProduction("cosh", 43),
-                new ListedProduction("cos", 44),
-                new ListedProduction("tang", 45),
-                new ListedProduction("tangh", 46),
-                new ListedProduction("atang", 47),
-                new ListedProduction("asin", 48),
-                new ListedProduction("acos", 49),
-                new ListedProduction("log", 50),
-                new ListedProduction("exponential", 51),
-                new ListedProduction("chr", 52),
-                new ListedProduction("float", 53),
-                new ListedProduction("length", 54),
-                new ListedProduction("printf", 55),
-                new ListedProduction("scanf", 56),
-                new ListedProduction("pow", 57),
-                new ListedProduction("cbrt", 58),
-                new ListedProduction("fact", 59),
-                new ListedProduction("round", 60),
-                new ListedProduction("trunc", 61),
-                new ListedProduction("minimal", 62),
-                new ListedProduction("maximal", 63),
-                new ListedProduction("floor", 64))));
+            new ListedProduction("abs ( identificador )", 38),
+            new ListedProduction("sqr ( EXP )", 39),
+            new ListedProduction("sqrt ( EXP )", 40),
+            new ListedProduction("sin ( EXP )", 41),
+            new ListedProduction("sinh ( EXP )", 42),
+            new ListedProduction("cosh ( EXP )", 43),
+            new ListedProduction("cos ( EXP )", 44),
+            new ListedProduction("tang ( EXP )", 45),
+            new ListedProduction("atang ( EXP )", 46),
+            new ListedProduction("asin ( EXP )", 47),
+            new ListedProduction("acos ( EXP )", 48),
+            new ListedProduction("log ( EXP )", 49),
+            new ListedProduction("exponential ( EXP )", 50),
+            new ListedProduction("chr ( numero )", 51),
+            new ListedProduction("float ( texto )", 52),
+            new ListedProduction("length ( identificador )", 53),
+            new ListedProduction("printf ( IMPRESION )", 54),
+            new ListedProduction("scanf ( )", 55),
+            new ListedProduction("pow ( EXP )", 56),
+            new ListedProduction("cbrt ( EXP )", 57),
+            new ListedProduction("fact ( EXP )", 58),
+            new ListedProduction("round ( EXP )", 59),
+            new ListedProduction("trunc ( EXP )", 60),
+            new ListedProduction("minimal ( LISTA )", 61),
+            new ListedProduction("maximal ( LISTA )", 62),
+            new ListedProduction("floor ( EXP )", 63)
+        )));
         gramatica.put("IMPRESION", new Produccion(Arrays.asList(
-                new ListedProduction("número IMPRESION_PRIMA", 65),
-                new ListedProduction("texto IMPRESION_PRIMA", 66))));
+            new ListedProduction("numero IMPRESION_PRIMA", 64),
+            new ListedProduction("texto IMPRESION_PRIMA", 65)
+        )));
         gramatica.put("IMPRESION_PRIMA", new Produccion(Arrays.asList(
-                new ListedProduction(", IMPRESION", 67),
-                new ListedProduction(null, 68))));
+            new ListedProduction(", IMPRESION", 66),
+            new ListedProduction("null", 67)
+        )));
         gramatica.put("LISTA", new Produccion(Arrays.asList(
-                new ListedProduction("[ LISTA_ELEMENTO ]", 69))));
+            new ListedProduction("[ LISTA_ELEMENTO ]", 68)
+        )));
         gramatica.put("LISTA_ELEMENTO", new Produccion(Arrays.asList(
-                new ListedProduction("numero LISTA_ELEMENTO_PRIMA", 70))));
+            new ListedProduction("numero , LISTA_ELEMENTO_PRIMA", 69)
+        )));
         gramatica.put("LISTA_ELEMENTO_PRIMA", new Produccion(Arrays.asList(
-                new ListedProduction(", LISTA_ELEMENTO", 71),
-                new ListedProduction(null, 72))));
+            new ListedProduction(", LISTA_ELEMENTO", 70),
+            new ListedProduction("null", 71)
+        )));
         gramatica.put("IF", new Produccion(Arrays.asList(
-                new ListedProduction("if EXP_BOOLEANA BLOQUE ELIF", 73))));
+            new ListedProduction("if EXP_BOOLEANA BLOQUE ELIF", 72)
+        )));
         gramatica.put("ELIF", new Produccion(Arrays.asList(
-                new ListedProduction("elif EXP_BOOLEANA BLOQUE ELIF", 74),
-                new ListedProduction("else BLOQUE", 75),
-                new ListedProduction(null, 76))));
+            new ListedProduction("elif EXP_BOOLEANA BLOQUE ELIF", 73),
+            new ListedProduction("else BLOQUE", 74),
+            new ListedProduction("null", 75)
+        )));
         gramatica.put("WHILE", new Produccion(Arrays.asList(
-                new ListedProduction("while EXP_BOOLEANA BLOQUE", 77))));
+            new ListedProduction("while EXP_BOOLEANA BLOQUE", 76)
+        )));
         gramatica.put("FOR", new Produccion(Arrays.asList(
-                new ListedProduction("for [ identificador = EXP ; identificador OPERADOR EXP ; identificador SIGNO ] BLOQUE", 78))));
+            new ListedProduction("for [ identificador = EXP ; identificador OPER EXP ; identificador SIGNO ] BLOQUE", 77)
+        )));
         gramatica.put("DO", new Produccion(Arrays.asList(
-                new ListedProduction("do BLOQUE while EXP_BOOLEANA", 79))));
+            new ListedProduction("do BLOQUE while EXP_BOOLEANA", 78)
+        )));
         gramatica.put("SIGNO", new Produccion(Arrays.asList(
-                new ListedProduction("++", 80),
-                new ListedProduction("--", 81))));
+            new ListedProduction("++", 79),
+            new ListedProduction("--", 80)
+        )));
         gramatica.put("EXP_BOOLEANA", new Produccion(Arrays.asList(
-                new ListedProduction("TERMB EXPB'", 82))));
+            new ListedProduction("TERMB EXPB'", 81)
+        )));
         gramatica.put("EXPB'", new Produccion(Arrays.asList(
-                new ListedProduction("and TERMB EXPB'", 83),
-                new ListedProduction("or TERMB EXPB'", 84),
-                new ListedProduction(null, 85))));
+            new ListedProduction("and TERMB EXPB'", 82),
+            new ListedProduction("or TERMB EXPB'", 83),
+            new ListedProduction("null", 84)
+        )));
         gramatica.put("TERMB", new Produccion(Arrays.asList(
-                new ListedProduction("EXP TERMB'", 86),
-                new ListedProduction(null, 87))));
+            new ListedProduction("FACTOR TERM'", 85)
+        )));
         gramatica.put("TERMB'", new Produccion(Arrays.asList(
-                new ListedProduction("OPER EXP TERMB'", 88),
-                new ListedProduction(null, 89))));
+            new ListedProduction("OPER EXP TERMB'", 86),
+            new ListedProduction("null", 87)
+        )));
         gramatica.put("EXP", new Produccion(Arrays.asList(
-                new ListedProduction("TERM EXP'", 90),
-                new ListedProduction(null, 91))));
+            new ListedProduction("TERM EXP'", 88)
+        )));
         gramatica.put("EXP'", new Produccion(Arrays.asList(
-                new ListedProduction("+ TERM EXP'", 92),
-                new ListedProduction("- TERM EXP'", 93),
-                new ListedProduction(null, 94))));
+            new ListedProduction("+ TERM EXP'", 89),
+            new ListedProduction("- TERM EXP'", 90),
+            new ListedProduction("null", 91)
+        )));
         gramatica.put("TERM", new Produccion(Arrays.asList(
-                new ListedProduction("FACTOR TERM'", 95),
-                new ListedProduction(null, 96))));
+            new ListedProduction("FACTOR TERM'", 92)
+        )));
         gramatica.put("TERM'", new Produccion(Arrays.asList(
-                new ListedProduction("* FACTOR TERM'", 97),
-                new ListedProduction("/ FACTOR TERM'", 98),
-                new ListedProduction(null, 99))));
+            new ListedProduction("* FACTOR TERM'", 93),
+            new ListedProduction("/ FACTOR TERM'", 94),
+            new ListedProduction("null", 95)
+        )));
         gramatica.put("FACTOR", new Produccion(Arrays.asList(
-                new ListedProduction("identificador FUNCT", 100),
-                new ListedProduction("( EXP_BOOLEANA )", 101))));
+            new ListedProduction("identificador FUNCT", 96),
+            new ListedProduction("( EXP_BOOLEANA )", 97)
+        )));
         gramatica.put("FUNCT", new Produccion(Arrays.asList(
-                new ListedProduction("( PARAMETROS )", 102),
-                new ListedProduction(null, 103))));
+            new ListedProduction("( PARAMETROS )", 98),
+            new ListedProduction("null", 99)
+        )));
         gramatica.put("OPER", new Produccion(Arrays.asList(
-                new ListedProduction(">", 104),
-                new ListedProduction("<", 105),
-                new ListedProduction(">=", 106),
-                new ListedProduction("<=", 107),
-                new ListedProduction("=", 108))));
+            new ListedProduction(">", 100),
+            new ListedProduction("<", 101),
+            new ListedProduction(">=", 102),
+            new ListedProduction("<=", 103),
+            new ListedProduction("=", 104)
+        )));
     }
 
     public Gramatica() {
@@ -315,47 +360,181 @@ public class Gramatica {
         initTerminales();
     }
 
-    void showGramatica() {
+    private void showGramatica() {
         for (Map.Entry<String, Produccion> entry : gramatica.entrySet()) {
             String noTerminal = entry.getKey();
             Produccion producciones = entry.getValue();
             producciones.getProduccion().forEach(x -> {
-                System.out.println(noTerminal + " -> " + x);
+                System.out.println(noTerminal + " -> " + x.toString());
             });
         }
     }
-    public LinkedHashSet<String> getPrimero(String simbolo) {
-        LinkedHashSet<String> first = new LinkedHashSet<>();
+
+    public boolean getFileFirst(String fileName) {
+        var path = System.getProperty("user.home") + "/Desktop/";
+        File file = new File(path + fileName + FILE_EXTENSION);
+        if(file.exists()){
+            file.delete();
+        }
+        try {
+            FileWriter wr = new FileWriter(file, true);
+            noTerminales.forEach(x -> {
+                try {
+                    wr.write("\n");
+
+                    wr.write(x + ": [");
+                    getFirst(x).forEach(y -> {
+                        try {
+                            wr.write(y.toString() + ",");
+                        } catch (IOException ex) {
+                            Logger.getLogger(Gramatica.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+                    wr.write("]");
+                } catch (IOException ex) {
+                    Logger.getLogger(Gramatica.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            return true;
+        } catch (IOException ex) {
+            return false;
+        }
+    }
+
+    private final LinkedList<String> visitedSymbols = new LinkedList<>();
+
+    private int getCountFromSymbol(String noTerminal) {
+        int count = 0;
+        for (String x : visitedSymbols) {
+            if (x.equals(noTerminal)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private LinkedHashSet<String> getProductions(String noTerminal) {
+        LinkedHashSet<String> lista = new LinkedHashSet<>();
+        gramatica.forEach((x, y) -> {
+            y.getProduccion().forEach(listed -> {
+                try {
+                    if (listed.getSimbolos() != null) {
+                        if (Arrays.asList(listed.getSimbolos().split("\\s")).contains(noTerminal)) {
+                            lista.add(x + "->" + listed.getSimbolos() + "->" + listed.getLine());
+                        }
+                    }
+                } catch (NullPointerException ex) {
+                    ex.printStackTrace();
+                }
+            });
+        });
+        return lista;
+    }
+
+    public int getIndex(String[] symbols, String target) {
+        int aux = -1;
+        for (int i = 0; i < symbols.length; i++) {
+            if (symbols[i].equals(target)) {
+                aux = i;
+                break;
+            }
+        }
+        return aux;
+    }
+
+    private LinkedHashSet<String> parseToStringList(LinkedHashSet<First> data) {
+        LinkedHashSet<String> result = new LinkedHashSet<>();
+        data.forEach(x -> {
+            result.add(x.getProduccion());
+        });
+        return result;
+    }
+
+    private LinkedHashSet<String> getFollow(String noTerminal) {
+        LinkedHashSet<String> result = new LinkedHashSet<>();
+        visitedSymbols.add(noTerminal);
+        if (getCountFromSymbol(noTerminal) < LIMIT) {
+            LinkedHashSet<String> producciones = getProductions(noTerminal);
+            producciones.forEach(x -> {
+                String[] symbols = x.split("->")[1].split("\\s");
+                if (symbols[symbols.length - 1].equals(noTerminal)) {
+                    LinkedHashSet<String> simbolosIndirectos = getFollow(x.split("->")[0]);
+                    if (simbolosIndirectos != null) {
+                        result.addAll(simbolosIndirectos);
+                    }
+                } else if (!symbols[symbols.length - 1].equals(noTerminal) && noTerminales.contains(symbols[getIndex(symbols, noTerminal) + 1])) {
+                    String a = symbols[getIndex(symbols, noTerminal) + 1];
+                    LinkedHashSet<String> simbolosIndirectos = parseToStringList(getFirst(a));
+                    result.addAll(simbolosIndirectos);
+                    if (simbolosIndirectos.contains("null") || simbolosIndirectos.contains(null)) {
+                        try{
+                            if(terminales.contains(symbols[getIndex(symbols, noTerminal) + 2])){
+                                result.add(symbols[getIndex(symbols, noTerminal) + 2]);
+                            }else{
+                                String sAux = symbols[getIndex(symbols, noTerminal) + 2];
+                                LinkedHashSet<First> list = getFirst(sAux);
+                                result.addAll(parseToStringList(list));
+                            }
+                        }catch(Exception ex){
+                            try{
+                                String sAux = x.split("->")[0];
+                                LinkedHashSet<String> f = getFollow(sAux);
+                                result.addAll(f);
+                            }catch(NullPointerException e){
+                                
+                            }
+                        }
+                    }
+                } else if (!symbols[symbols.length - 1].equals(noTerminal) && terminales.contains(symbols[getIndex(symbols, noTerminal) + 1])) {
+                    result.add(symbols[getIndex(symbols, noTerminal) + 1]);
+                }
+                if (noTerminal.equals("P") || noTerminal.equals("E")) {
+                    result.add("EOF");
+                }
+            });
+            if (result.contains("null") || result.contains(null)) {
+                result.remove("null");
+            }
+            if (noTerminal.equals("P") || noTerminal.equals("E")) {
+                result.add("EOF");
+            }
+            return result;
+        } else {
+            return null;
+        }
+
+    }
+
+    private LinkedHashSet<First> getFirst(String simbolo) {
+        LinkedHashSet<First> first = new LinkedHashSet<>();
         Produccion p = gramatica.get(simbolo);
-        for(ListedProduction produccion : p.getProduccion()){
+        for (ListedProduction produccion : p.getProduccion()) {
+            int line = produccion.getLine();
             try {
                 String[] simbolos = produccion.getSimbolos().split("\\s");
-                if(terminales.contains(simbolos[0])){
-                    first.add(simbolos[0]);
-                }else{
-                    LinkedHashSet<String> simbolosIndirectos = getPrimero(simbolos[0]);
+                if (terminales.contains(simbolos[0])) {
+                    first.add(new First(simbolos[0], line));
+                } else {
+                    LinkedHashSet<First> simbolosIndirectos = getFirst(simbolos[0]);
                     first.addAll(simbolosIndirectos);
                 }
             } catch (NullPointerException e) {
-                first.add("null");
+                first.add(new First("null", line));
             }
-            
         }
         return first;
     }
 
     public static void main(String[] args) {
-        var a = Arrays.asList(new String[]{});
-        Gramatica g = new Gramatica(); 
-        noTerminales.forEach(x->{
-            System.out.println(x);
-            System.out.println(g.getPrimero(x));
+        Gramatica g = new Gramatica();
+        noTerminales.forEach(action -> {
+            System.out.println(action);
+            System.out.println(g.getFirst(action));
+        });
+        noTerminales.forEach(action -> {
+            System.out.println(action);
+            System.out.println(g.getFollow(action));
+            g.visitedSymbols.clear();
         });
     }
 }
-
-/**
- * 
- *PROCEDURE'
-[identificador, int, float, double, string, char, {, :, ;, function]
- */
