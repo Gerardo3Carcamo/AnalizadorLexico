@@ -24,7 +24,7 @@ public class Gramatica {
     public static Map<String, Produccion> gramatica = new LinkedHashMap<>();
     public static LinkedHashSet<String> noTerminales = new LinkedHashSet<>();
     public static LinkedHashSet<String> terminales = new LinkedHashSet<>();
-    private final String FILE_EXTENSION = ".txt";
+    private static final String FILE_EXTENSION = ".txt";
     private final int LIMIT = 100;
 
     public static void initNoTerminales() {
@@ -370,7 +370,7 @@ public class Gramatica {
         }
     }
 
-    public boolean getFileFirst(String fileName) {
+    public boolean getFileFirstSet(String fileName) {
         var path = System.getProperty("user.home") + "/Desktop/";
         File file = new File(path + fileName + FILE_EXTENSION);
         if(file.exists()){
@@ -399,6 +399,65 @@ public class Gramatica {
         } catch (IOException ex) {
             return false;
         }
+    }
+    
+    public boolean getFileFollwSet(String fileName) {
+        var path = System.getProperty("user.home") + "/Desktop/";
+        File file = new File(path + fileName + FILE_EXTENSION);
+        if(file.exists()){
+            file.delete();
+        }
+        try {
+            FileWriter wr = new FileWriter(file, true);
+            noTerminales.forEach(x -> {
+                try {
+                    wr.write("\n");
+
+                    wr.write(x + ": [");
+                    System.out.println(x);
+                    getFollow(x).forEach(y -> {
+                        try {
+                            wr.write(y.toString() + ",");
+                        } catch (IOException ex) {
+                            Logger.getLogger(Gramatica.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+                    wr.write("]");
+                } catch (IOException ex) {
+                    Logger.getLogger(Gramatica.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            visitedSymbols.clear();
+            return true;
+        } catch (IOException ex) {
+            return false;
+        }
+    }
+    public boolean getNT_TList(String fileName, boolean terminal){
+        var path = System.getProperty("user.home") + "/Desktop/";
+        File file = new File(path + fileName + FILE_EXTENSION);
+        try(FileWriter fw = new FileWriter(file)){
+            if(terminal){
+                terminales.forEach(x ->{
+                    try {
+                        fw.write(x + "\n");
+                    } catch (IOException ex) {
+                        Logger.getLogger(Gramatica.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+            }else{
+                noTerminales.forEach(x -> {
+                    try {
+                        fw.write(x + "\n");
+                    } catch (IOException ex) {
+                        Logger.getLogger(Gramatica.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+            }
+        } catch (IOException ex) {
+            return false;
+        }
+        return true;
     }
 
     private final LinkedList<String> visitedSymbols = new LinkedList<>();
@@ -441,44 +500,54 @@ public class Gramatica {
         }
         return aux;
     }
-
-    private LinkedHashSet<String> parseToStringList(LinkedHashSet<First> data) {
-        LinkedHashSet<String> result = new LinkedHashSet<>();
+    
+    private boolean containsNull(LinkedHashSet<First> data){
+        final boolean[] flag = new boolean[]{false};
         data.forEach(x -> {
-            result.add(x.getProduccion());
+            if(x.getProduccion().equals("null")){
+                flag[0] = true;
+            }
         });
-        return result;
+        return flag[0];
+    }
+    
+    private LinkedHashSet<First> removeIfContainsNullValue(LinkedHashSet<First> data){
+        LinkedHashSet<First> aux = new LinkedHashSet<>();
+        data.forEach(x ->{
+            if(!x.getProduccion().equals("null")) aux.add(x);
+        });
+        return aux;
     }
 
-    private LinkedHashSet<String> getFollow(String noTerminal) {
-        LinkedHashSet<String> result = new LinkedHashSet<>();
+    private LinkedHashSet<First> getFollow(String noTerminal) {
+        LinkedHashSet<First> result = new LinkedHashSet<>();
         visitedSymbols.add(noTerminal);
         if (getCountFromSymbol(noTerminal) < LIMIT) {
             LinkedHashSet<String> producciones = getProductions(noTerminal);
             producciones.forEach(x -> {
                 String[] symbols = x.split("->")[1].split("\\s");
                 if (symbols[symbols.length - 1].equals(noTerminal)) {
-                    LinkedHashSet<String> simbolosIndirectos = getFollow(x.split("->")[0]);
+                    LinkedHashSet<First> simbolosIndirectos = getFollow(x.split("->")[0]);
                     if (simbolosIndirectos != null) {
                         result.addAll(simbolosIndirectos);
                     }
                 } else if (!symbols[symbols.length - 1].equals(noTerminal) && noTerminales.contains(symbols[getIndex(symbols, noTerminal) + 1])) {
                     String a = symbols[getIndex(symbols, noTerminal) + 1];
-                    LinkedHashSet<String> simbolosIndirectos = parseToStringList(getFirst(a));
+                    LinkedHashSet<First> simbolosIndirectos = getFirst(a);
                     result.addAll(simbolosIndirectos);
-                    if (simbolosIndirectos.contains("null") || simbolosIndirectos.contains(null)) {
+                    if (containsNull(simbolosIndirectos)) {
                         try{
                             if(terminales.contains(symbols[getIndex(symbols, noTerminal) + 2])){
-                                result.add(symbols[getIndex(symbols, noTerminal) + 2]);
+                                result.add(new First(symbols[getIndex(symbols, noTerminal) + 2], Integer.parseInt(x.split("->")[0])));
                             }else{
                                 String sAux = symbols[getIndex(symbols, noTerminal) + 2];
                                 LinkedHashSet<First> list = getFirst(sAux);
-                                result.addAll(parseToStringList(list));
+                                result.addAll(list);
                             }
                         }catch(Exception ex){
                             try{
                                 String sAux = x.split("->")[0];
-                                LinkedHashSet<String> f = getFollow(sAux);
+                                LinkedHashSet<First> f = getFollow(sAux);
                                 result.addAll(f);
                             }catch(NullPointerException e){
                                 
@@ -486,23 +555,32 @@ public class Gramatica {
                         }
                     }
                 } else if (!symbols[symbols.length - 1].equals(noTerminal) && terminales.contains(symbols[getIndex(symbols, noTerminal) + 1])) {
-                    result.add(symbols[getIndex(symbols, noTerminal) + 1]);
+                    result.add(new First(symbols[getIndex(symbols, noTerminal) + 1], Integer.parseInt(x.split("->")[2])));
                 }
                 if (noTerminal.equals("P") || noTerminal.equals("E")) {
-                    result.add("EOF");
+                    result.add(new First("EOF", -1));
                 }
             });
-            if (result.contains("null") || result.contains(null)) {
-                result.remove("null");
-            }
             if (noTerminal.equals("P") || noTerminal.equals("E")) {
-                result.add("EOF");
+                result.add(new First("EOF", -1));
             }
-            return result;
+            return purgeFollowSet(removeIfContainsNullValue(result));
         } else {
             return null;
         }
-
+    }
+    private LinkedHashSet<First> purgeFollowSet(LinkedHashSet<First> data){
+        LinkedList<String> symbol = new LinkedList<>();
+        LinkedList<Integer> line = new LinkedList<>();
+        data.forEach(x ->{
+            if(!symbol.contains(x.getProduccion())){
+                symbol.add(x.getProduccion());
+                line.add(x.getLine());
+            }
+        });
+        LinkedHashSet<First> result = new LinkedHashSet<>();
+        for(int i = 0; i < symbol.size(); i++) result.add(new First(symbol.get(i), line.get(i)));
+        return result;
     }
 
     private LinkedHashSet<First> getFirst(String simbolo) {
@@ -522,19 +600,23 @@ public class Gramatica {
                 first.add(new First("null", line));
             }
         }
-        return first;
+        return purgeFollowSet(first);
     }
 
     public static void main(String[] args) {
-        Gramatica g = new Gramatica();
-        noTerminales.forEach(action -> {
-            System.out.println(action);
-            System.out.println(g.getFirst(action));
-        });
-        noTerminales.forEach(action -> {
-            System.out.println(action);
-            System.out.println(g.getFollow(action));
-            g.visitedSymbols.clear();
-        });
+//        Gramatica g = new Gramatica();
+//        g.getFileFirstSet("FirstFile");
+//        g.getNT_TList("Terminales", true);
+//        g.getNT_TList("No Terminales", false);
+//        g.getFileFollwSet("FollowFile");
+//        System.out.println(g.getFirst("BLOQUE"));
+//            System.out.println(action);
+//            System.out.println(g.getFirst(action));
+//        });
+//        noTerminales.forEach(action -> {
+//            System.out.println(action);
+//            System.out.println(g.getFollow(action));
+//            g.visitedSymbols.clear();
+//        });
     }
 }
