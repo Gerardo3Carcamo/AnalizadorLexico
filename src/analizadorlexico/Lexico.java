@@ -144,8 +144,59 @@ public class Lexico {
     private Lexema processFinalStates(int estado, String lexema, int line) {
         Lexema response = new Lexema("Error lexico", "Error", 500, line);
         switch (estado) {
-            case 1000 ->
-                response = Arrays.asList(palabrasClave).contains(listToString(texto).trim().toLowerCase()) ? new Lexema("Palabra reservada", lexema, estado, line) : new Lexema("Identificador", lexema, estado, line);
+            
+            case 1000 ->{
+                if(Arrays.asList(palabrasClave).contains(listToString(texto).trim().toLowerCase())){
+                    switch(lexema){
+                        case "int" -> response = new Lexema("Int", lexema, 2001, line);
+                        case "include" -> response = new Lexema("Include", lexema, 2002, line);
+                        case "float" -> response = new Lexema("Float", lexema, 2003, line);
+                        case "double" -> response = new Lexema("Double", lexema, 2004, line);
+                        case "string" -> response = new Lexema("String", lexema, 2005, line);
+                        case "char" -> response = new Lexema("Char", lexema, 2006, line);
+                        case "function" -> response = new Lexema("Function", lexema, 2007, line);
+                        case "return" -> response = new Lexema("Return", lexema, 2008, line);
+                        case "call" -> response = new Lexema("Call", lexema, 2009, line);
+                        case "if" -> response = new Lexema("If", lexema, 2010, line);
+                        case "elif" -> response = new Lexema("Elif", lexema, 2011, line);
+                        case "else" -> response = new Lexema("Else", lexema, 2012, line);
+                        case "while" -> response = new Lexema("While", lexema, 2013, line);
+                        case "for" -> response = new Lexema("For", lexema, 2014, line);
+                        case "do" -> response = new Lexema("Do", lexema, 2015, line);
+                        case "and" -> response = new Lexema("And", lexema, 2016, line);
+                        case "or" -> response = new Lexema("Or", lexema, 2017, line);
+                        case "abs" -> response = new Lexema("Abs", lexema, 2018, line);
+                        case "sqr" -> response = new Lexema("Sqr", lexema, 2019, line);
+                        case "sqrt" -> response = new Lexema("Sqrt", lexema, 2020, line);
+                        case "sin" -> response = new Lexema("Sin", lexema, 2021, line);
+                        case "sinh" -> response = new Lexema("Sinh", lexema, 2022, line);
+                        case "cosh" -> response = new Lexema("Cosh", lexema, 2023, line);
+                        case "cos" -> response = new Lexema("Cos", lexema, 2024, line);
+                        case "tang" -> response = new Lexema("Tang", lexema, 2025, line);
+                        case "tanh" -> response = new Lexema("Tanh", lexema, 2026, line);
+                        case "atang" -> response = new Lexema("Atang", lexema, 2027, line);
+                        case "asin" -> response = new Lexema("Asin", lexema, 2028, line);
+                        case "acos" -> response = new Lexema("Acos", lexema, 2029, line);
+                        case "log" -> response = new Lexema("Log", lexema, 2030, line);
+                        case "exponential" -> response = new Lexema("Exponential", lexema, 2031, line);
+                        case "chr" -> response = new Lexema("Chr", lexema, 2032, line);
+                        case "length" -> response = new Lexema("Length", lexema, 2033, line);
+                        case "printf" -> response = new Lexema("Printf", lexema, 2034, line);
+                        case "scanf" -> response = new Lexema("Scanf", lexema, 2035, line);
+                        case "pow" -> response = new Lexema("Pow", lexema, 2036, line);
+                        case "cbrt" -> response = new Lexema("Cbrt", lexema, 2037, line);
+                        case "fact" -> response = new Lexema("Fact", lexema, 2038, line);
+                        case "round" -> response = new Lexema("Round", lexema, 2039, line);
+                        case "trunc" -> response = new Lexema("Trunc", lexema, 2040, line);
+                        case "minimal" -> response = new Lexema("Minimal", lexema, 2041, line);
+                        case "maximal" -> response = new Lexema("Maximal", lexema, 2042, line);
+                        case "floor" -> response = new Lexema("Floor", lexema, 2043, line);
+                        default -> response = new Lexema("Invalid", lexema, -1, line);
+                    }
+                }else{
+                    response = new Lexema("Identificador", lexema, estado, line);
+                }
+            }
             case 1001 ->
                 response = new Lexema("Numero entero", lexema, estado, line);
             case 1026 ->
@@ -219,13 +270,19 @@ public class Lexico {
             }else{
                 lexemas.add(new Lexema("Error de sintaxis", listToString(texto), 500, line));
                 estado = 0;
-                    texto.clear();
-                    columna = 0;
+                texto.clear();
+                columna = 0;
             }
 
         }
-        System.out.println(lexemas.size());
         return lexemas;
+    }
+    
+    public static void main(String[] args) {
+        ArrayList<Lexema> list = new Lexico().analizar("-");
+        list.forEach(a ->{
+            System.out.println(a);
+        });
     }
 
 }
