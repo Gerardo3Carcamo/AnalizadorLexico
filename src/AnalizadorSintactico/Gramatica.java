@@ -604,19 +604,8 @@ public class Gramatica {
     }
 
     public static void main(String[] args) {
-//        Gramatica g = new Gramatica();
-//        g.getFileFirstSet("FirstFile");
-//        g.getNT_TList("Terminales", true);
-//        g.getNT_TList("No Terminales", false);
-//        g.getFileFollwSet("FollowFile");
-//        System.out.println(g.getFirst("BLOQUE"));
-//            System.out.println(action);
-//            System.out.println(g.getFirst(action));
-//        });
-//        noTerminales.forEach(action -> {
-//            System.out.println(action);
-//            System.out.println(g.getFollow(action));
-//            g.visitedSymbols.clear();
-//        });
+        Gramatica g = new Gramatica();
+        System.out.println(g.getProductions("VARIABLES"));
+        System.out.println(g.getFollow("TIPO"));
     }
 }
