@@ -18,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
 import java.io.FileOutputStream;
-import java.io.FilterInputStream;
 import java.util.HashMap;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -83,6 +82,7 @@ public class Gramatica {
 
     public static void initTerminales() {
         terminales.add("#");
+        terminales.add("variables");
         terminales.add("include");
         terminales.add("identificador");
         terminales.add(":=");
@@ -174,13 +174,14 @@ public class Gramatica {
 //        noTerminales.add("T'");
 //        noTerminales.add("F");
         gramatica.put("P", new Produccion(Arrays.asList(
-                new ListedProduction("INCLUDE CONSTANTES VARIABLES FUNCION MAIN", 1)
+                new ListedProduction("INCLUDE CONSTANTES variables : VARIABLES FUNCION MAIN", 1)
         )));
         gramatica.put("INCLUDE", new Produccion(Arrays.asList(
                 new ListedProduction("# include < identificador >", 2)
         )));
         gramatica.put("CONSTANTES", new Produccion(Arrays.asList(
-                new ListedProduction("identificador := EXP CONSTANTES", 3)
+                new ListedProduction("identificador := EXP CONSTANTES", 3),
+                new ListedProduction("null", 4)
         )));
         gramatica.put("VARIABLES", new Produccion(Arrays.asList(
                 new ListedProduction("LISTA_VARIABLES : TIPO VARIABLES_PRIMA", 5)
@@ -549,7 +550,8 @@ public class Gramatica {
                     if (containsNull(simbolosIndirectos)) {
                         try {
                             if (terminales.contains(symbols[getIndex(symbols, noTerminal) + 2])) {
-                                result.add(new First(symbols[getIndex(symbols, noTerminal) + 2], Integer.parseInt(x.split("->")[0])));
+                                String aux = symbols[getIndex(symbols, noTerminal) + 2];
+                                result.add(new First(aux, Integer.parseInt(x.split("->")[2])));
                             } else {
                                 String sAux = symbols[getIndex(symbols, noTerminal) + 2];
                                 LinkedHashSet<First> list = getFirst(sAux);
@@ -724,49 +726,48 @@ public class Gramatica {
 
     public void CreateExcelFirst() throws FileNotFoundException, IOException {
         int colIndex = 1;
-        Workbook workbook = new HSSFWorkbook();
-        Sheet sheet = workbook.createSheet("first");
-        Row headerRow = sheet.createRow(0);
-        int col = 1;
-        for (String data : terminales) {
-            Cell cell = headerRow.createCell(col++);
-            cell.setCellValue(data);
-            CellStyle style = workbook.createCellStyle();
-            style.setAlignment(HorizontalAlignment.CENTER);
-            style.setVerticalAlignment(VerticalAlignment.CENTER);
-            cell.setCellStyle(style);
-        }
-        int rows = 1;
-        int colData = 1;
-        for (String data : noTerminales) {
-            Row row = sheet.createRow(rows++);
-            Cell cell = row.createCell(0);
-            cell.setCellValue(data);
-        }
-
-        for (String x : noTerminales) {
-            LinkedHashSet<First> lista = MergeSets(x);
-            for (First f : lista) {
-                for (Cell cell : headerRow) {
-                    if (cell.getStringCellValue().equals(f.getProduccion())) {
-                        // Si hay coincidencia, escribir el valor de getLine en la celda correspondiente
-                        int rowIndex = 1; // Comenzar desde la segunda fila (índice 1)
-                        Row dataRow = sheet.getRow(rowIndex);
-                        if (dataRow == null) {
-                            dataRow = sheet.createRow(rowIndex); // Crear una nueva fila si es necesario
-                        }
-                        Cell dataCell = dataRow.createCell(colIndex);
-                        dataCell.setCellValue(f.getLine());
-                        break; // Salir del bucle interno una vez que se haya encontrado la coincidencia
-                    }
-                }
-                colIndex++;
+        try (Workbook workbook = new HSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("first");
+            Row headerRow = sheet.createRow(0);
+            int col = 1;
+            for (String data : terminales) {
+                Cell cell = headerRow.createCell(col++);
+                cell.setCellValue(data);
+                CellStyle style = workbook.createCellStyle();
+                style.setAlignment(HorizontalAlignment.CENTER);
+                style.setVerticalAlignment(VerticalAlignment.CENTER);
+                cell.setCellStyle(style);
             }
+            int rows = 1; 
+            for (String data : noTerminales) {
+                Row row = sheet.createRow(rows++);
+                Cell cell = row.createCell(0);
+                cell.setCellValue(data);
+            }
+            
+            for (String x : noTerminales) {
+                LinkedHashSet<First> lista = MergeSets(x);
+                for (First f : lista) {
+                    for (Cell cell : headerRow) {
+                        if (cell.getStringCellValue().equals(f.getProduccion())) {
+                            // Si hay coincidencia, escribir el valor de getLine en la celda correspondiente
+                            int rowIndex = 1; // Comenzar desde la segunda fila (índice 1)
+                            Row dataRow = sheet.getRow(rowIndex);
+                            if (dataRow == null) {
+                                dataRow = sheet.createRow(rowIndex); // Crear una nueva fila si es necesario
+                            }
+                            Cell dataCell = dataRow.createCell(colIndex);
+                            dataCell.setCellValue(f.getLine());
+                            break; // Salir del bucle interno una vez que se haya encontrado la coincidencia
+                        }
+                    }
+                    colIndex++;
+                }
+            }
+            FileOutputStream fileOut = new FileOutputStream("archivo_excel.xls");
+            workbook.write(fileOut);
+            fileOut.close();
         }
-        FileOutputStream fileOut = new FileOutputStream("archivo_excel.xls");
-        workbook.write(fileOut);
-        fileOut.close();
-        workbook.close();
     }
 
     public String CreateArrayFromExcelTable(String path) {
@@ -806,6 +807,11 @@ public class Gramatica {
 
     public static void main(String[] args) {
         Gramatica g = new Gramatica();
-        System.out.println(g.CreateArrayFromExcelTable("C:\\Users\\000093883\\Desktop\\tabla_sintactica.xls"));
+//        System.out.println(g.CreateArrayFromExcelTable("C:\\Users\\000093883\\Desktop\\tabla_sintactica.xls"));
+        noTerminales.forEach(n -> {
+            System.out.println(n);
+            System.out.println(g.getFollow(n));
+            g.visitedSymbols.clear();
+        });
     }
 }

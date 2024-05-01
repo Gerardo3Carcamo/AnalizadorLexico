@@ -31,7 +31,8 @@ public class Main {
         gramatica.initGramatica();
         sintactico.initMaps();
         List<Lexema> list = lexico.analizar("""
-                                            #include <prueba> X := FUENTE
+                                            #include <prueba> 
+                                            X := FUENTE := y := p
                                             """);
         for (int i = list.size() - 1; i >= 0; i--) {
             entrada.push(list.get(i).getState());
@@ -59,6 +60,9 @@ public class Main {
 
             }
             move++;
+        }
+        if(!stack.isEmpty() || !entrada.isEmpty()){
+            throw new SintaxisException();
         }
     }
 
