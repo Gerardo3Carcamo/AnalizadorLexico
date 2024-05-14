@@ -156,23 +156,6 @@ public class Gramatica {
     }
 
     public void initGramatica() {
-//        gramatica.put("E", new Produccion(Arrays.asList(new ListedProduction("T E'", 1))));
-//        gramatica.put("E'", new Produccion(Arrays.asList(new ListedProduction("+ T E'", 2), new ListedProduction("null", 3))));
-//        gramatica.put("T", new Produccion(Arrays.asList(new ListedProduction("F T'", 4))));
-//        gramatica.put("T'", new Produccion(Arrays.asList(new ListedProduction("* F T'", 5), new ListedProduction("null", 6))));
-//        gramatica.put("F", new Produccion(Arrays.asList(new ListedProduction("( E )", 7), new ListedProduction("id", 8))));
-//
-//        terminales.add("+");
-//        terminales.add("*");
-//        terminales.add("(");
-//        terminales.add(")");
-//        terminales.add("id");
-//
-//        noTerminales.add("E");
-//        noTerminales.add("E'");
-//        noTerminales.add("T");
-//        noTerminales.add("T'");
-//        noTerminales.add("F");
         gramatica.put("P", new Produccion(Arrays.asList(
                 new ListedProduction("INCLUDE CONSTANTES variables : VARIABLES FUNCION MAIN", 1)
         )));
@@ -180,7 +163,7 @@ public class Gramatica {
                 new ListedProduction("# include < identificador >", 2)
         )));
         gramatica.put("CONSTANTES", new Produccion(Arrays.asList(
-                new ListedProduction("identificador := EXP CONSTANTES", 3),
+                new ListedProduction("identificador := EXP , CONSTANTES", 3),
                 new ListedProduction("null", 4)
         )));
         gramatica.put("VARIABLES", new Produccion(Arrays.asList(
@@ -288,7 +271,7 @@ public class Gramatica {
                 new ListedProduction("[ LISTA_ELEMENTO ]", 68)
         )));
         gramatica.put("LISTA_ELEMENTO", new Produccion(Arrays.asList(
-                new ListedProduction("numero , LISTA_ELEMENTO_PRIMA", 69)
+                new ListedProduction("numero LISTA_ELEMENTO_PRIMA", 69)
         )));
         gramatica.put("LISTA_ELEMENTO_PRIMA", new Produccion(Arrays.asList(
                 new ListedProduction(", LISTA_ELEMENTO", 70),
@@ -331,7 +314,8 @@ public class Gramatica {
                 new ListedProduction("null", 87)
         )));
         gramatica.put("EXP", new Produccion(Arrays.asList(
-                new ListedProduction("TERM EXP'", 88)
+                new ListedProduction("TERM EXP'", 88),
+                new ListedProduction("numero EXP'", 105)
         )));
         gramatica.put("EXP'", new Produccion(Arrays.asList(
                 new ListedProduction("+ TERM EXP'", 89),
@@ -391,15 +375,15 @@ public class Gramatica {
                 try {
                     wr.write("\n");
 
-                    wr.write(x + ": [");
+                    wr.write(x + ": [\n");
                     getFirst(x).forEach(y -> {
                         try {
-                            wr.write(y.toString() + ",");
+                            wr.write("\t" + y.toString() + ",\n");
                         } catch (IOException ex) {
                             Logger.getLogger(Gramatica.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     });
-                    wr.write("]");
+                    wr.write("]\n");
                 } catch (IOException ex) {
                     Logger.getLogger(Gramatica.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -721,7 +705,11 @@ public class Gramatica {
 
             list.addAll(follow);
         }
-        return (list);
+        return list;
+    }
+    
+    public void GetFileFFMerged(LinkedHashSet<First> data){
+        
     }
 
     public void CreateExcelFirst() throws FileNotFoundException, IOException {
@@ -807,11 +795,14 @@ public class Gramatica {
 
     public static void main(String[] args) {
         Gramatica g = new Gramatica();
+        System.out.println( g.getFirst("OPER"));
 //        System.out.println(g.CreateArrayFromExcelTable("C:\\Users\\000093883\\Desktop\\tabla_sintactica.xls"));
-        noTerminales.forEach(n -> {
-            System.out.println(n);
-            System.out.println(g.getFollow(n));
-            g.visitedSymbols.clear();
-        });
+//        g.getFileFirstSet("firstFixed2024-05-11");
+//System.out.println(g.getFirst("OPER"));
+//        noTerminales.forEach(n -> {
+//            System.out.print(n + ":");
+//            System.out.println(g.getFollow(n));
+//            g.visitedSymbols.clear();
+//        });
     }
 }

@@ -103,7 +103,8 @@ public class Lexico {
         "trunc",
         "minimal",
         "maximal",
-        "floor"
+        "floor",
+        "variables"
     };
 
     private void initMapColumns() {
@@ -191,6 +192,7 @@ public class Lexico {
                         case "minimal" -> response = new Lexema("Minimal", lexema, 2041, line);
                         case "maximal" -> response = new Lexema("Maximal", lexema, 2042, line);
                         case "floor" -> response = new Lexema("Floor", lexema, 2043, line);
+                        case "variables" -> response = new Lexema("Variables", lexema, 2044, line);
                         default -> response = new Lexema("Invalid", lexema, -1, line);
                     }
                 }else{

@@ -14,4 +14,8 @@ public class SintaxisException extends Throwable{
         super("Error de sintaxis");
     }
     
+    public SintaxisException(String message){
+        super(message);
+    }
+    
 }

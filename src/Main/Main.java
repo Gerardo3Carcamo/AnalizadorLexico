@@ -31,13 +31,16 @@ public class Main {
         gramatica.initGramatica();
         sintactico.initMaps();
         List<Lexema> list = lexico.analizar("""
-                                            #include <prueba> 
-                                            X := FUENTE := y := p
+                                            #include <prueba>
+                                            x := 1, variables :
+                                            hola : int
                                             """);
         for (int i = list.size() - 1; i >= 0; i--) {
             entrada.push(list.get(i).getState());
         }
+        int i = 0;
         while (!stack.isEmpty() && !entrada.isEmpty()) {
+            
             if (move == 0) {
                 stack = sintactico.GetSymbols(stack, entrada);
             } else {
@@ -50,10 +53,15 @@ public class Main {
                         System.out.println("se acepta el simbolo: " +  stack.peek());
                         stack.pop();
                         entrada.pop();
+                        i++;
                     } else {
                         stack = sintactico.GetSymbols(stack, entrada);
                     }
                 } catch (Exception ex) {
+                    System.out.println("Se requiere: " + stack.peek());
+                    list.forEach(lexema ->{
+                        if(lexema.getState() == entrada.peek()) System.out.println("Y se proporciono: " + lexema.getValue());
+                    });
                     ex.printStackTrace();
                     break;
                 }
@@ -62,7 +70,7 @@ public class Main {
             move++;
         }
         if(!stack.isEmpty() || !entrada.isEmpty()){
-            throw new SintaxisException();
+            throw new SintaxisException("No se proporciono el código fuente completo para poder ser compilado");
         }
     }
 
