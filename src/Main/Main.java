@@ -6,6 +6,7 @@ package Main;
 
 import AnalizadorSintactico.*;
 import analizadorlexico.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -30,17 +31,52 @@ public class Main {
         Analizador sintactico = new Analizador();
         gramatica.initGramatica();
         sintactico.initMaps();
-        List<Lexema> list = lexico.analizar("""
+        ArrayList<Lexema> list = lexico.analizar("""
+                                            //Seccion Include//
                                             #include <prueba>
+                                            //Seccion Constantes//
                                             x := 1, variables :
-                                            hola : int
+                                            //Seccion Variables//
+                                            hola, adios, gerardo : int[20][2][0]
+                                            //Seccion Function//
+                                            double[10][20] function pruebaFuncion(){
+                                                //Seccion Bloque//
+                                                printf("Hola");
+                                                scanf();
+                                                variableFuncion = 1;
+                                                abs(identificador);
+                                                for[i = 1; i < 0; i++]{
+                                                    hola = 10E12;
+                                                    adios = 0;
+                                                    abs(hola);
+                                                    call funcionprueba();
+                                                };
+                                            } //Seccion Return// return identificador
+                                            
+                                            int function funcionprueba(){
+                                                minimal([1,2,3,4,6]);
+                                            } return hola
+                                            //
+                                                 Esto es un comentario multilinea
+                                                 se demuestra que en la parte lexica,
+                                                 si detecta los comentarios correctamente
+                                                 y en la parte sintactica los ignora ya que 
+                                                 no tienen ningun efecto funcional en el codigo
+                                            //
+                                            {
+                                                minimal([1,2,3,4,6]);
+                                                call identificador(prueba: int);
+                                            }
                                             """);
+        list = lexico.deleteAllComments(list);
         for (int i = list.size() - 1; i >= 0; i--) {
             entrada.push(list.get(i).getState());
         }
         int i = 0;
         while (!stack.isEmpty() && !entrada.isEmpty()) {
-            
+            if(entrada.peek() == 1026){
+                int io = 0;
+            }
             if (move == 0) {
                 stack = sintactico.GetSymbols(stack, entrada);
             } else {
@@ -62,7 +98,6 @@ public class Main {
                     list.forEach(lexema ->{
                         if(lexema.getState() == entrada.peek()) System.out.println("Y se proporciono: " + lexema.getValue());
                     });
-                    ex.printStackTrace();
                     break;
                 }
 
@@ -71,6 +106,8 @@ public class Main {
         }
         if(!stack.isEmpty() || !entrada.isEmpty()){
             throw new SintaxisException("No se proporciono el código fuente completo para poder ser compilado");
+        }else{
+            System.out.println("Final del programa, ejecucion correcta.");
         }
     }
 

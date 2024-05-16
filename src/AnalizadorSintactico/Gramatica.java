@@ -229,7 +229,7 @@ public class Gramatica {
                 new ListedProduction("identificador = EXP", 36)
         )));
         gramatica.put("CALL_FUNCTION", new Produccion(Arrays.asList(
-                new ListedProduction("call identificador ( PARAMETRO )", 37)
+                new ListedProduction("call identificador ( PARAMETROS )", 37)
         )));
         gramatica.put("BUILD_IN_FUNCTIONS", new Produccion(Arrays.asList(
                 new ListedProduction("abs ( identificador )", 38),
@@ -795,7 +795,9 @@ public class Gramatica {
 
     public static void main(String[] args) {
         Gramatica g = new Gramatica();
-        System.out.println( g.getFirst("OPER"));
+        System.out.println( g.getFirst("MAIN"));
+        System.out.println("follows");
+        System.out.println(g.getFollow("BLOQUE"));
 //        System.out.println(g.CreateArrayFromExcelTable("C:\\Users\\000093883\\Desktop\\tabla_sintactica.xls"));
 //        g.getFileFirstSet("firstFixed2024-05-11");
 //System.out.println(g.getFirst("OPER"));
