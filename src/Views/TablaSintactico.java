@@ -4,7 +4,7 @@
  */
 package Views;
 
-import analizadorlexico.CustomTableCellRenderer;
+import AnalizadorSintactico.CustomTableCellRenderer;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 

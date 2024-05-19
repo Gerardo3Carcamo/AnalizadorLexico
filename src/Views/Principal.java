@@ -141,6 +141,7 @@ public class Principal extends javax.swing.JFrame {
 
         jButton3.setFont(new java.awt.Font("Fira Code", 0, 14)); // NOI18N
         jButton3.setText("Analizador Sintactico");
+        jButton3.setEnabled(false);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -261,6 +262,10 @@ public class Principal extends javax.swing.JFrame {
             tokensTable.setModel(model);
             if(!errores.isEmpty()){
                 this.jButton1.setEnabled(true);
+                this.jButton3.setEnabled(false);
+            }else{
+                this.jButton1.setEnabled(!true);
+                this.jButton3.setEnabled(!false);
             }
         }
     }
