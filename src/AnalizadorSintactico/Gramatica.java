@@ -757,6 +757,31 @@ public class Gramatica {
             fileOut.close();
         }
     }
+    
+    public static void createExcelFrom2DArray(String[][] data, String fileName) {
+        Workbook workbook = new HSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Sheet1");
+
+        for (int rowIndex = 0; rowIndex < data.length; rowIndex++) {
+            Row row = sheet.createRow(rowIndex);
+            for (int colIndex = 0; colIndex < data[rowIndex].length; colIndex++) {
+                Cell cell = row.createCell(colIndex);
+                cell.setCellValue(data[rowIndex][colIndex]);
+            }
+        }
+
+        try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
+            workbook.write(fileOut);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                workbook.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public String CreateArrayFromExcelTable(String path) {
         boolean flag = false;
@@ -791,20 +816,5 @@ public class Gramatica {
 
         }
         return builder.toString();
-    }
-
-    public static void main(String[] args) {
-        Gramatica g = new Gramatica();
-        System.out.println( g.getFirst("MAIN"));
-        System.out.println("follows");
-        System.out.println(g.getFollow("BLOQUE"));
-//        System.out.println(g.CreateArrayFromExcelTable("C:\\Users\\000093883\\Desktop\\tabla_sintactica.xls"));
-//        g.getFileFirstSet("firstFixed2024-05-11");
-//System.out.println(g.getFirst("OPER"));
-//        noTerminales.forEach(n -> {
-//            System.out.print(n + ":");
-//            System.out.println(g.getFollow(n));
-//            g.visitedSymbols.clear();
-//        });
     }
 }

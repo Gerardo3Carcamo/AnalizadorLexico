@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -281,7 +282,7 @@ public class Lexico {
         return lexemas;
     }
     
-    public ArrayList<Lexema> deleteAllComments(ArrayList<Lexema> data){
+    public List<Lexema> deleteAllComments(List<Lexema> data){
         Iterator<Lexema> i = data.iterator();
         while(i.hasNext()){
             if(i.next().getState() == 1004){
@@ -289,13 +290,6 @@ public class Lexico {
             }
         }
         return data;
-    }
-    
-    public static void main(String[] args) {
-        ArrayList<Lexema> list = new Lexico().analizar("10E12");
-        list.forEach(a ->{
-            System.out.println(a);
-        });
     }
 
 }
