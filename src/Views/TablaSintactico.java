@@ -51,7 +51,7 @@ public class TablaSintactico extends javax.swing.JFrame {
     }
 
     private void fillTable(List<TablaSintactico.Sintactico> list){
-        jTable1.setRowHeight(30);
+        jTable1.setRowHeight(25);
         jTable1.setDefaultRenderer(Object.class, new CustomTableCellRenderer());
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         list.forEach(x -> {
