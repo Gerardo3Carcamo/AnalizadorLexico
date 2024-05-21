@@ -1,0 +1,57 @@
+//Seccion Include//
+                                            ##include <prueba>
+                                            //Seccion Constantes//
+                                            x := 1, variables :
+                                            //Seccion Variables//
+                                            hola, adios, gerardo : int[20][2][0]; 
+                                            Hola: string;
+                                            adios: double[2][3];
+                                            a: char;
+                                            b: float[10]
+                                            //Seccion Function//
+                                            double[10][20] function pruebaFuncion(){
+                                                //Seccion Bloque//
+                                                printf("Hola");
+                                                scanf();
+                                                variableFuncion = 1;
+                                                variable2Funcion = 19.1E-12;
+                                                abs(identificador);
+                                                for[i = 1; i < 0; i++]{
+                                                    hola = 10E12;
+                                                    adios = 0;
+                                                    abs(hola);
+                                                    call funcionprueba();
+                                                };
+                                            } //Seccion Return// return identificador
+                                            int function funcionprueba(){
+                                                minimal([1]);
+                                                if hola {
+                                                    call hola();
+                                                    while hola {
+                                                        printf("Hola");
+                                                        scanf();
+                                                    };
+                                                };
+                                                do{
+                                                    hola = 0;
+                                                } while hola;
+                                            } return hola
+                                            //
+                                            Esto es un comentario multilinea
+                                            se demuestra que en la parte lexica,
+                                            si detecta los comentarios correctamente
+                                            y en la parte sintactica los ignora ya que 
+                                            no tienen ningun efecto funcional en el codigo
+                                            //
+                                            {
+                                                minimal([1]);
+                                                call identificador(prueba: int);
+                                                entero1_1 = 0.1E+12;
+						while adios {
+							lop = 0;
+							call lop();
+						};
+						for[j = 2; j <= 0; j--]{
+							call a();
+						};
+                                            }
