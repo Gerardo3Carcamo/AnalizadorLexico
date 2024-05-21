@@ -236,7 +236,6 @@ public class Principal extends javax.swing.JFrame {
                 text.append(line).append("\n");
             }
         } catch (IOException e) {
-            e.printStackTrace();
         }
         return text.toString();
     }

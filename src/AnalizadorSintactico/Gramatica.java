@@ -29,12 +29,12 @@ import org.apache.poi.ss.usermodel.*;
 public class Gramatica {
 
     public Map<String, Produccion> gramatica = new LinkedHashMap<>();
-    public static LinkedHashSet<String> noTerminales = new LinkedHashSet<>();
-    public static LinkedHashSet<String> terminales = new LinkedHashSet<>();
+    public LinkedHashSet<String> noTerminales = new LinkedHashSet<>();
+    public LinkedHashSet<String> terminales = new LinkedHashSet<>();
     private static final String FILE_EXTENSION = ".txt";
     private final int LIMIT = 100;
 
-    public static void initNoTerminales() {
+    public void initNoTerminales() {
         // Agregar los símbolos no terminales a noTerminales
         noTerminales.add("P");
         noTerminales.add("INCLUDE");
@@ -80,7 +80,7 @@ public class Gramatica {
         noTerminales.add("OPER");
     }
 
-    public static void initTerminales() {
+    public void initTerminales() {
         terminales.add("#");
         terminales.add("variables");
         terminales.add("include");
@@ -515,7 +515,7 @@ public class Gramatica {
         return aux;
     }
 
-    private LinkedHashSet<First> getFollow(String noTerminal) {
+    public LinkedHashSet<First> getFollow(String noTerminal) {
         LinkedHashSet<First> result = new LinkedHashSet<>();
         visitedSymbols.add(noTerminal);
         if (getCountFromSymbol(noTerminal) < LIMIT) {
@@ -660,7 +660,7 @@ public class Gramatica {
         map.put(":", 69);
     }
 
-    private LinkedHashSet<First> getFirst(String simbolo) {
+    public LinkedHashSet<First> getFirst(String simbolo) {
         LinkedHashSet<First> first = new LinkedHashSet<>();
         Produccion p = gramatica.get(simbolo);
         for (ListedProduction produccion : p.getProduccion()) {

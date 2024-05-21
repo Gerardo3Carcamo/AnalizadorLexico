@@ -47,6 +47,7 @@ public class TablaSintactico extends javax.swing.JFrame {
         initComponents();
         fillTable(list);
         this.setResizable(false);
+        this.setLocationRelativeTo(null);
         this.setTitle("Analisis sintactico");
     }
 
@@ -98,6 +99,8 @@ public class TablaSintactico extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.setGridColor(new java.awt.Color(255, 255, 255));
+        jTable1.setShowGrid(false);
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setMinWidth(800);

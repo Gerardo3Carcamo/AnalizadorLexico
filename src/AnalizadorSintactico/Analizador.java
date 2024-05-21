@@ -306,10 +306,11 @@ public class Analizador {
         Stack<String> stack = new Stack<>();
         stack.push("P");
         Gramatica gramatica = new Gramatica();
-        gramatica.initGramatica();
         Lexico lexico = new Lexico();
         Analizador sintactico = new Analizador();
         gramatica.initGramatica();
+        gramatica.initNoTerminales();
+        gramatica.initTerminales();
         sintactico.initMaps();
         list = lexico.deleteAllComments(list);
         for (int i = list.size() - 1; i >= 0; i--) {
@@ -321,8 +322,23 @@ public class Analizador {
                 try {
                     stack = sintactico.GetSymbols(stack, entrada);
                 } catch (SintaxisException sintaxis) {
-                    listResult.add(new TablaSintactico.Sintactico("Error de sintaxis se esperaba: " + stack.peek() + " y se proporciono: " + sintactico.terminalTokens.get(entrada.peek()), false));
-                    return listResult;
+                    String nextSymbol = "";
+                            if (gramatica.noTerminales.contains(stack.peek())) {
+                                StringBuilder builder = new StringBuilder();
+                                gramatica.getFirst(stack.peek()).forEach(x -> {
+                                    if(!x.getProduccion().equals("null")){
+                                        builder.append(x.getProduccion()).append("| ");
+                                    }
+                                });
+                                gramatica.getFollow(stack.peek()).forEach(x ->{
+                                    builder.append(x.getProduccion()).append("| ");
+                                });
+                                nextSymbol = builder.toString().substring(0, builder.length() - 2);
+                            } else {
+                                nextSymbol = stack.peek();
+                            }
+                            listResult.add(new TablaSintactico.Sintactico("Error de sintaxis se esperaba: " + nextSymbol + " y se proporciono: " + sintactico.terminalTokens.get(entrada.peek()), false));
+                            return listResult;
                 }
             } else {
                 try {
@@ -331,17 +347,32 @@ public class Analizador {
                     }
                     var flag = stack.peek().equals(sintactico.terminalTokens.get(entrada.peek()));
                     if (flag) {
-                        listResult.add(new TablaSintactico.Sintactico(sintactico.terminalTokens.get(entrada.peek()), true));
+                        listResult.add(new TablaSintactico.Sintactico("Se acepta: " + sintactico.terminalTokens.get(entrada.peek()), true));
                         System.out.println("se acepta el simbolo: " + stack.peek());
                         stack.pop();
                         entrada.pop();
                         i++;
-                        
+
                     } else {
                         try {
                             stack = sintactico.GetSymbols(stack, entrada);
                         } catch (SintaxisException sintaxis) {
-                            listResult.add(new TablaSintactico.Sintactico("Error de sintaxis se esperaba: " + stack.peek() + " y se proporciono: " + sintactico.terminalTokens.get(entrada.peek()), false));
+                            String nextSymbol;
+                            if (gramatica.noTerminales.contains(stack.peek())) {
+                                StringBuilder builder = new StringBuilder();
+                                gramatica.getFirst(stack.peek()).forEach(x -> {
+                                    if(!x.getProduccion().equals("null")){
+                                        builder.append(x.getProduccion()).append("| ");
+                                    }
+                                });
+                                gramatica.getFollow(stack.peek()).forEach(x ->{
+                                    builder.append(x.getProduccion()).append("| ");
+                                });
+                                nextSymbol = builder.toString().substring(0, builder.length() - 2);
+                            } else {
+                                nextSymbol = stack.peek();
+                            }
+                            listResult.add(new TablaSintactico.Sintactico("Error de sintaxis se esperaba: " + nextSymbol + " y se proporciono: " + sintactico.terminalTokens.get(entrada.peek()), false));
                             return listResult;
                         }
                     }
